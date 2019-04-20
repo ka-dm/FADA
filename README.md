@@ -16,6 +16,6 @@ En este repositorio se expone la implementación de las soluciones a los 2 probl
     - PROBLEMA 2: COPIA DE LIBROS
     
 ## Ejecución:
-Para llevar a cabo las implementaciones se utilizó el lenguaje de programación Python, por lo que es necesario tener instalado Python en el equipo y ejecutar el siguiente comando para realizar la ejecución de las soluciones:
+Para llevar a cabo las implementaciones se utilizó el lenguaje de programación Python, por lo que es necesario tener instalado Python-3.x.x  en el equipo y ejecutar el siguiente comando para realizar la ejecución de las soluciones:
 
-    - python 'nombreArchivo.py'
+    - python3 'nombreArchivo.py'
