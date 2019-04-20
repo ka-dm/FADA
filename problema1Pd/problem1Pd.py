@@ -1,84 +1,82 @@
+# Este Script esta optimizado para Python 3.x.x
+
 from operator import itemgetter
 import datetime
 
-def mochila(capacidade, valxpeso, tamanho, M):
-    K = [[0 for x in range(capacidade+1)] for x in range(tamanho+1)]
-    S = [[None for x in range(capacidade+1)] for x in range(tamanho+1)]
+def usoSalaCirugias(w, beneficio, M):
+    """
+    Este algoritmo recibe los siguientes parametros:
+        w = es la capacida maxima
+        beneficio = es una matriz 2*n, que contiene un valor y un peso asociado a cada proceso
+        M = es una matriz matriz ordenada por la hora de incio, la cual contiene la informacion leida del archivo de entrada de cada proceso
+    """
+    n = len(beneficio)
+    K = [[0 for x in range(w+1)] for x in range(n+1)]
+    S = [[None for x in range(w+1)] for x in range(n+1)]
     
-
-    for i in range(tamanho + 1):
-        
-        #print( M[i-1][0],  M[i-2][0])
-        for w in range(capacidade + 1):
+    for i in range(n + 1):
+        for w in range(w + 1):
             
             indiceAnt = str(S[i-1][w])
-            indiceAnt = (indiceAnt.replace('[','').replace(']','')).split(',') 
-            #print(indiceAnt[0])
-            #indiceAnt = indiceAnt[1:len(indiceAnt)-1]
-            
+            indiceAnt = (indiceAnt.replace('[','').replace(']','')).split(',')  # Elimina los caracteres indicados, y convierte el str a una lista
+            procAct = M[i-1][1] 
+            if indiceAnt[0] != 'None': procAnt = M[int(indiceAnt[0])][2] # Si el indice anterior es vacio, establece una hora predeterminada
+            else: procAnt = '00:00'
 
-            if indiceAnt[0] != 'None':
-                #print('Es un numero')
-                pAnteri = M[int(indiceAnt[0])][2]
-            else:
-                pAnteri = '00:00'
-
-            #pAnteri = M[][2]
-            pActual = M[i-1][1] 
-            #print('K[',i,'][',w,']',pActual, pAnteri)
-            #and isNoOverlapped(pAnteri,pActual)
+            # llena y verifica que no esten solapados dos procesos
             if i == 0 or w == 0 :
                 K[i][w] = 0
-            elif valxpeso[i - 1][1] <= w and isNoOverlapped(pAnteri,pActual):
-                    K[i][w] = max(valxpeso[i - 1][0] + K[i - 1][w - valxpeso[i - 1][1]], K[i - 1][w]) 
+            elif beneficio[i - 1][1] <= w and noEstaSolapado(procAnt,procAct):
+                K[i][w] = max(beneficio[i - 1][0] + K[i - 1][w - beneficio[i - 1][1]], K[i - 1][w]) 
             else:
                 K[i][w] = K[i - 1][w]
             
             # llena la Matriz alterna con la soluciones anteriores
-            capsobrando = w
+            capSobrante = w
             solucion = []
             for j in range(i, 0, -1):
               #print(w,' ', i)
-                if K[j][capsobrando] != K[j-1][capsobrando]:
+                if K[j][capSobrante] != K[j-1][capSobrante]:
                     solucion.append(j-1)
                     # solucion.append(M[j-1][0])
-                    capsobrando = capsobrando - valxpeso[j-1][1]
+                    capSobrante = capSobrante - beneficio[j-1][1]
                     S[i][w] = list(solucion)    
 
-    capsobrando = capacidade
-    escolhidos =[]
-    #printMatriz(K)
-    #printMatriz(S)
+    procEscogidos =[]
+    for i in range(len(S[n][w])):
+        procEscogidos.append(M[S[n][w][i]][0]) # Busca los nombres de los procedimientos en la matriz M, y los agrega en una lista. 
 
-    for i in range(tamanho, 0, -1):
-        #print(capsobrando,' ', i)
-        if K[i][capsobrando] != K[i-1][capsobrando]:
-            escolhidos.append(M[i-1][0])
-            capsobrando = capsobrando - valxpeso[i-1][1]
-
-    return escolhidos, (K[tamanho][capacidade])/2,'horas'
+    return procEscogidos, (K[n][w])/2,'horas'
 
 def leeArchivo():
-    global archivo,entrada
-
+    global entrada
+    
     #src = 'C:\\Users\\kevin\\Desktop\\proyectoFinalFADA\\problema1Pd\\entradas\\punto1PdEntrada1.txt'
     src = 'C:\\Users\\kevin\\Desktop\\proyectoFinalFADA\\problema1Pd\\entradas\\punto1PdEntrada2.txt'
     #src = 'C:\\Users\\kevin\\Desktop\\proyectoFinalFADA\\problema1Pd\\entradas\\punto1PdEntrada3.txt'
 
     entrada = []
-    archivo = open(src, 'r')
-    n = archivo.readline()
+    archivoEntrada = open(src, 'r')
+    n = archivoEntrada.readline()
     entrada = [None]*int(n)
     indice = 0
 
-    for linea in archivo.readlines():
+    for linea in archivoEntrada.readlines():
         entrada[indice]  = linea.split() # .split() convierte a una lista
         indice += 1
-    archivo.close() 
+    archivoEntrada.close() 
 
     #printMatriz(entrada)
 
-    
+def crearArchivoSalida(contenido):
+    src = 'C:\\Users\\kevin\\Desktop\\proyectoFinalFADA\\problema1Pd'
+
+    archivoSalida = open(src + '\\punto1PdSalida.txt', 'w')
+    archivoSalida.write(str(contenido[1]) + '\n')
+    for i in range(len(contenido[0])):
+        archivoSalida.write(str(contenido[0][i]) + '\n')
+    archivoSalida.close()
+
 def printMatriz(a):
     #imprime una matriz
     print()
@@ -114,15 +112,22 @@ def strToDateObject(hora):
     hDateObject = datetime.datetime.strptime(hora, '%H:%M')
     return hDateObject 
 
-def isNoOverlapped(hFin,hIni):
-    h1 = strToDateObject(hFin)
-    h2 = strToDateObject(hIni)
+def noEstaSolapado(hFin,hIni):
+    #h1 = strToDateObject(hFin)
+    #h2 = strToDateObject(hIni)
     #print('h1= ', h1, 'h2= ', h2)   
     
+    h1 = horaToDecimal( hFin) * 2
+    h2 = horaToDecimal( hIni) * 2
     if(h1 <= h2):
         return(True)   
-    else: 
+    else:
         return(False)
+
+def horaToDecimal(hora):
+    hIniDateObject = datetime.timedelta(hours= int(hora[:hora.find(':')]),minutes= int(hora[hora.find(':')+1:]))
+    decimalHora = hIniDateObject.total_seconds() / 3600
+    return decimalHora        
 
 def valorPeso(a):
     lista1 = []
@@ -134,18 +139,10 @@ def valorPeso(a):
     return lista1
 
 if __name__ == "__main__":
-    # formato: valxpeso = [[valor, peso], ..., n]
+    # formato: beneficio = [[valor, peso], ..., n]
     leeArchivo()
     matrizOrdenada = ordenarMatriz(entrada,2)
-    
-    valxpeso = valorPeso(matrizOrdenada)
+    beneficio = valorPeso(matrizOrdenada)
     W = 48
-    n = len(valxpeso)
-
-    print('valorxpeso = ',valxpeso)
-    #valorPeso(valxpeso)
-    #valxpeso = [[8,8],[7,7],[11,11],[12,12],[2,2]]
-    #imprime solucion
-    print('Solucion: ',mochila(W, valxpeso, n, matrizOrdenada))
-    
-    #print(isNoOverlapped('13:00', '12:00'))
+    print('Solucion: ',usoSalaCirugias(W, beneficio, matrizOrdenada) )
+    crearArchivoSalida(usoSalaCirugias(W, beneficio, matrizOrdenada))
