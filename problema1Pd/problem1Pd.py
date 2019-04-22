@@ -3,19 +3,19 @@ from operator import itemgetter
 import datetime
 import os
 
-def usoSalaCirugias(w, beneficio, M):
+def usoSalaCirugias(cap, beneficio, M):
     """
     Este algoritmo recibe los siguientes parametros:
-        w = es la capacida maxima
+        cap = es la capacida maxima
         beneficio = es una matriz 2*n, que contiene un valor y un peso asociado a cada proceso
         M = es una matriz matriz ordenada por la hora de incio, la cual contiene la informacion leida del archivo de entrada de cada proceso
     """
     n = len(beneficio)
-    K = [[0 for x in range(w+1)] for x in range(n+1)]
-    S = [[None for x in range(w+1)] for x in range(n+1)]
+    K = [[0 for x in range(cap+1)] for x in range(n+1)]
+    S = [[None for x in range(cap+1)] for x in range(n+1)]
     
     for i in range(n + 1):
-        for w in range(w + 1):
+        for w in range(cap + 1):
             
             indiceAnt = str(S[i-1][w])
             indiceAnt = (indiceAnt.replace('[','').replace(']','')).split(',')  # Elimina los caracteres indicados, y convierte el str a una lista
@@ -46,7 +46,7 @@ def usoSalaCirugias(w, beneficio, M):
     for i in range(len(S[n][w])):
         procEscogidos.append(M[S[n][w][i]][0]) # Busca los nombres de los procedimientos en la matriz M, y los agrega en una lista. 
 
-    return procEscogidos, (K[n][w])/2,'horas'
+    return procEscogidos, (K[n][cap])/2,'horas'
 
 def leeArchivo(rutaArchivo):
     global entrada
