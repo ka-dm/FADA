@@ -117,7 +117,8 @@ def begin(path):
 # p: la lista con las cantidades de paginas de la entrada
 # ideal: el promedio de paginas por escritor
 # --- [salidas] ---
-# 
+# out: el arreglo con las posiciones de marcación de asignacion de libros
+# max: el acumulado maximo de paginas en la asignacion (tiempo total de duracion de copiado)
 def algo(m,n,p,ideal):
     # i: el indice que itera la lista de numero de páginas
     i=0
@@ -173,78 +174,165 @@ def algo(m,n,p,ideal):
                     if max<carry:
                         max=carry
                     i+=1
+                # si ya se ha asignado un numero de paginas previamente al escritor
                 else:
+                    # se pregunta si asignado las paginas del libro actual
+                    # el autor sobrepasa el numero de paginas promedio
                     if ideal<carry+p[i]:
+                        # si asignando el libro actual el numero de paginas promedio es sobrepasado
+                        # se toma la mejor decision teniendo en cuenta el numero de paginas que menos 
+                        # se aleje del promedio
                         if aux(carry,p[i],ideal):
-                            if max<carry:
-                                max=carry
+                            # el libro no pudo ser asignado porque el numero de paginas se alejó
+                            # mas del promedio asignandolo
+                            
+                            # se borra la variable de paginas acumuladas para
+                            # la proxima asginación
                             carry=0
+                            # se itera solamente hasta el siguiente escritor
                             j+=1
+                            # se agrega el marcador de posicion hasta el libro actual
                             out.append(i)
 
+                        # si el libro es asignado 
                         else:
+                            # se agrega el numero de paginas del libro actual al acumulado
                             carry += p[i]
+                            # se actualiza el numero maximo de paginas acumuladas
                             if max<carry:
                                 max=carry
+                            # se restaura el numero de paginas acumuladas
                             carry=0
+                            # se da paso al siguiente libro y al siguiente escritor
                             i+=1
                             j+=1
+                            # se agrega el marcador de posición hasta el libro actual
                             out.append(i)
+                    
+                    # si asignando el libro actual no se sobrepasa el numero de paginas
+                    # promedio por escritor, el libro se asignará
                     else:
+                        # se agrega el numero de paginas del libro actual al acumulado
                         carry += p[i]
+                        # se actualiza el acumulado maximo
                         if max<carry:
                             max=carry
+                        # se da paso al siguiente libro
                         i+=1
+
+    # se retorna el arreglo con las posiciones de marcación y el acumulado maximo de paginas 
+    # para un escritor
     return out,max
 
+# Es el procedimiento que se encarga de decidir si
+# será asignado o no un libro segun su numero de paginas,
+# el acumulado de paginas actual para el escritor y
+# el promedio de paginas por escritor
+# --- [entras] ---
+# carry: el numero de paginas acumuladas hasta el momento de la
+# asignación
+# p: el numero de páginas del libro a comparar
+# ideal: el promedio de paginas por escritor
+# --- [salidas] ---
+# Boolean: true si el libro no seberia ser asignado false en caso contrario
+
 def aux(carry,p,ideal):
-    before = ideal-carry
-    after = (carry+p)-ideal
-    if(before<after):
+    noAsignado = ideal-carry
+    asignado = (carry+p)-ideal
+    if(noAsignado<asignado):
         return True
     return False
 
-
+# Prepara un arreglo a partir del las marcas de posicion
+# de las asignaciones de libros
+# --- [entras] ---
+# m: la cantidad de libros
+# n: el numero de escritores
+# out: es una arreglo numerico que contiene 
+# la salida de algo() con las marcas de posición
+# de las asignaciones de libros
+# --- [salidas] ---
+# printable: una lista "imprimible" para mostrar
+# las asignaciones de libros a los escritores con m*2 elementos
+# en caso de que n=1 , contiene 2 elementos [1,m] resolviendo
+# el caso trivial donde solo hay un escritor
 def prepare(m,n,out):
     i=0
     printable =[]
+    # si el arreglo out[] esta vacio es porque
+    # solamente habia un escritor
     if len(out)==0:
         printable.append(1)
         printable.append(m)
     else:
+        # si hay mas de un escritor
         while i<len(out):
             if i==0:
+                # si hay solo dos escritores
                 if len(out)==1:
                     printable.append(1)
                     printable.append(out[i])
                     printable.append(out[i]+1)
                     printable.append(m)
                     i+=1
+                # en caso de que hayan mas escritores
                 else:
+                    # se incluye el índice del primer libro asginado (1)
                     printable.append(1)
+                    # se incluye el índice el primer marcador (ya que i==0)
                     printable.append(out[i])
                     i+=1
+            
+            # si no se está procesando el primer marcador
             else:
+                # se verifica si es el ultimo marcador
                 if i==len(out)-1:
+                    # si el marcador esta despues del ultimo libro
                     if out[i]==m:
+                        # se incluye el marcador posterior del libro anterior
                         printable.append(out[i-1]+1)
+                        # el marcador final (tambien m)
                         printable.append(out[i])
+                        # y se termina el while
                         i+=1
+
+                    # si es el ultimo marcador y no está despues del ultimo libro
                     else:
+                        # se incluye el marcador posterior del libro anterior
                         printable.append(out[i-1]+1)
+                        # el marcador actual
                         printable.append(out[i])
+                        # el siguiente marcador
                         printable.append(out[i]+1)
+                        # y el marcador final
                         printable.append(m)
+                        # y se termina el while
                         i+=1
+                
+                # si el marcador representa una posición intermedia
                 else:
+                    # se incluye el marcador posterior del libro anterior
                     printable.append(out[i-1]+1)
+                    # y el marcador siguiente
                     printable.append(out[i])
                     i+=1    
+    
+    # este es un ajuste final en caso de que hayan menos libros que escritores
     if m<=n:
         return printable[2:]
     else:
         return printable
 
+# Procedimiento encargado de escribir los datos
+# de una respuesta a un archivo de texto
+# --- [entras] ---
+# array: es el arreglo "printable" de la salida de
+# la funcion prepare()
+# duration: es la duración de copiado de la obra 
+# (anteriormente llamado "max" en algo())
+# path: String con ruta y nombre del archivo para escribir
+# --- [salidas] ---
+# none
 def writeFile(array,duration,path):
     out = open(path,"w")
     m=len(array)
@@ -255,11 +343,21 @@ def writeFile(array,duration,path):
         i+=2
     out.close()
 
-def genProofs(pagesLimit,writersLimit,filesLimit,booksLimit):
+# Generador de pruebas para el algortimo a partir de valores
+# aleatorios
+# --- [entras] ---
+# pagesLimit: el numero maximo de paginas para un libro
+# writersLimit: el numero maximo de escritores en cada problema
+# files: el numero de archivos aleatorios de pruebas para generar
+# booksLimit: el numero maximo de libros para asignar en cada problema
+# --- [salidas] ---
+# none
+def genProofs(pagesLimit,writersLimit,files,booksLimit):
     i=1
-    while i<=filesLimit:
+    while i<=files:
         n = randint(1,writersLimit)
         m = randint(writersLimit,booksLimit)
+        # se usa la carpeta "in" para depositar los problemas
         file = open("in/in"+str(i),"w")
         file.write(str(n)+" ")
         file.write(str(m)+"\n")
@@ -270,29 +368,43 @@ def genProofs(pagesLimit,writersLimit,filesLimit,booksLimit):
         i+=1
     file.close()
 
-def runAlgo(filesLimit):
+# Corre las pruebas que se encuentran en la carpeta "in" y 
+# escribe sus salidas en la carpeta "out"
+# --- [entras] ---
+# files: el numero de pruebas/archivos que se crearán/resolverán
+# --- [salidas] ---
+# none
+def runAlgo(files):
     i=1
-    while i<=filesLimit:
+    while i<=files:
+        # se llama a begin() para capturar los datos del archivo
         m,n,p,ideal = begin("in/in"+str(i))
+        # se corre el algoritmo
         out,duration = algo(m,n,p,ideal)
+        # cuestiones de verificación
         print(p)
         print(out)
+        # se escribe el archivo repuesta
         writeFile(prepare(m,n,out),duration,"out/out"+str(i))
         i+=1
 
-def run(filesLimit):
+# Orquesta la generación de pruebas y la resolución de estas
+# --- [entras] ---
+# files: el numero de pruebas/archivos que se crearán/resolverán
+# --- [salidas] ---
+# "se deben revisar los archivos en las carpetas "in" y "out" para comprobar
+# las pruebas"
+def run(files):
+    # se eliminan las carpetas con las puebas anteriores
     shutil.rmtree("in",ignore_errors=True)
     shutil.rmtree("out",ignore_errors=True)
+    # se recrean las carpetas con las puebas anteriores
     os.makedirs(os.getcwd()+"/in")
     os.makedirs(os.getcwd()+"/out")
-    genProofs(20,5,filesLimit,7)
-    runAlgo(filesLimit)     
+    # se generan las pruebas
+    genProofs(20,5,files,7)
+    # se generan las salidas
+    runAlgo(files)     
 
 #####################{ Ejecucion }#####################
 run(1)
-
-
-
-
-
-
