@@ -70,48 +70,106 @@
 # [05-05] -> 62
 
 #####################{ Declaracion }#####################
-
+# para generar numeros aleatorios
+# para las pruebas
 from random import randint
+# para editar (borrar/crear) las carpetas que
+# contienen los archivos de las pruebas
 import os
 import shutil
 
+#Inicia tomando un archivo y recuperando la informacion para ser procesado
+# --- [entras] ---
+# path: String que contiene la ruta relativa del archivo
+# que se leerá
+# --- [salidas] ---
+# m: la cantidad de libros del archivo path
+# n: la cantidad de escritores en el archivo path
+# p: la lista con las cantidades de paginas de los libros
+# ideal: el promedio de paginas por escritor
 def begin(path):
+    #Se abre el arhivo
     archivo = open(path)
     nm = archivo.readline()
+    #se capturan los valores de escritores y libros
     n = int(nm.split()[0])
     m = int(nm.split()[1])
     names = []
     p = []
+    # se capturan las cantidades de páginas y los nombres
     for linea in archivo.readlines():
         names.append(linea.split()[0])
         p.append(linea.split()[1])
     p = list(map(int,p))
+    # se calcula el promedio de páginas por escritor
+    # que será usado mas adelante para saber si un libro
+    # debe o no asignarse a un escritor
     ideal = sum(p,0)/n
+    # se retornan todos los datos obtenidos excepto la lista de nombres 
+    # ya que no es usada
     return m,n,p,ideal
 
+# Es el procedimiento que se encarga de encontrar la forma de
+# distribuir los libros a los escritores
+# --- [entras] ---
+# m: la cantidad de libros de la entrada
+# n: la cantidad de escritores de la entrada
+# p: la lista con las cantidades de paginas de la entrada
+# ideal: el promedio de paginas por escritor
+# --- [salidas] ---
+# 
 def algo(m,n,p,ideal):
+    # i: el indice que itera la lista de numero de páginas
     i=0
+    # j: indice para llevar conteo de escritores
     j=0
+    # impresión para hacer verificaciones
     print("m:"+str(m))
     print("n:"+str(n))
+    # max: variable que guarda el valor que se tardará en
+    # transcribir la obra completa
     max=0
+    # carry: guarda el acumulado de paginas que tiene un lector,
+    # es reutilizada para cada lector, es decir, se 
+    # vacea cada vez que se le asignaran libros a otro lector
     carry=0
+    # out: arreglo de numeros con las posiciones para "partir" el
+    # arreglo p, ej: sea p=[14,5,16,20,8] y n=3 es decir, hay 5 libros
+    # y 3 autores, si out=[2,4] se dice que la distribución de libros 
+    # para los autores deberia ser [1,2][3,4][4,5] luego se entiende
+    # que la cardinalidad de out deberia ser siempre n-1
     out = []
+    # se descarta el caso trivial para max, si hay un solo autor
+    # el/las tiempo/paginas total(es) es la suma de los tiempos/paginas
+    # de todos los libros
     if n==1:
         max=sum(p)
+    # Si hay mas de un escritor
     if 1<n:
+        # si hay menos libros que escritores el problema no tiene mucho sentido
+        # pues solamente se debe asignar un libro a cada escritor
         if m<=n:
+            # se itera conforme a la cantidad de libros
             while i<m:
-                if i==0:
-                    max=p[i]
+                # se empieza la busqueda del libro mas largo
+                # comparando el valor de paginas del libro
+                # actual con el anterior
                 if max<p[i]:
                     max=p[i]
+                # se agregan las posiciones en las que se "parte"
+                # el arreglo
                 out.append(i)
                 i+=1
+        # el problema tiene mas sentido cuando hay mas libros que escritores
+        # porque es necesario hacer una buena distribución
         else:
+            # se itera conforme a la cantidad de libros para
             while i<m:
+                # si no se tienen paginas acumuladas para
+                # un lector entonces se asignan las del libro actual
                 if carry==0:
                     carry+=p[i]
+                    # se compara si es el acumulado de paginas mas largo
                     if max<carry:
                         max=carry
                     i+=1
