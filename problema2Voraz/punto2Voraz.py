@@ -153,12 +153,14 @@ def prepare(m,n,out):
         printable.append(1)
         printable.append(m)
     else:
-        
         while i<len(out):
             if i==0:
-                printable.append(1)
-                printable.append(out[i])
-                i+=1
+                if==:
+                    printable.append(1)
+                    printable.append(out[i])
+                    i+=1
+                else:
+                    
             else:
                 if i==len(out)-1:
                     if out[i]==m:
