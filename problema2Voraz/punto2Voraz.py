@@ -1,4 +1,4 @@
-#####################{ Pruebas }#####################
+##########################################{ Introduccion }##########################################
 
 #Condiciones iniciales
 # Se cosidera para el desarrollo del algoritmo que el orden o secuencia que tienen
@@ -69,7 +69,7 @@
 # [04-04] -> 41
 # [05-05] -> 62
 
-#####################{ Declaracion }#####################
+##########################################{ Declaracion }##########################################
 # para generar numeros aleatorios
 # para las pruebas
 from random import randint
@@ -406,5 +406,5 @@ def run(files):
     # se generan las salidas
     runAlgo(files)     
 
-#####################{ Ejecucion }#####################
+##########################################{ Ejecucion }##########################################
 run(1)
