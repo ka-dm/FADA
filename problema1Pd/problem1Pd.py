@@ -2,6 +2,7 @@
 from operator import itemgetter
 import datetime
 import os
+from tqdm import tqdm
 
 def usoSalaCirugias(cap, beneficio, M):
     """
@@ -14,7 +15,7 @@ def usoSalaCirugias(cap, beneficio, M):
     K = [[0 for x in range(cap+1)] for x in range(n+1)] #Crea y llena la matriz con 0's
     S = [[None for x in range(cap+1)] for x in range(n+1)] #Crea y llena la matriz con None
     
-    for i in range(n + 1):
+    for i in tqdm(range(n + 1)):
         for w in range(cap + 1):
             
             indiceAnt = str(S[i-1][w])
@@ -34,13 +35,15 @@ def usoSalaCirugias(cap, beneficio, M):
             # llena la Matriz alterna con la soluciones anteriores
             capSobrante = w
             solucion = []
-            for k in range(i, 0, -1):
+            for k in (range(i, 0, -1)):
               #print(w,' ', i)
                 if K[k][capSobrante] != K[k-1][capSobrante]:
                     solucion.append(k-1)
                     # solucion.append(M[k-1][0])
                     capSobrante = capSobrante - beneficio[k-1][1]
-                    S[i][w] = list(solucion)    
+                    S[i][w] = list(solucion)  
+                
+                   
 
     procEscogidos =[]
     for i in range(len(S[n][w])):
@@ -140,7 +143,13 @@ def valorPeso(a):
     #print(lista1)    
     return lista1
 
+def installTqdm():
+    # Instala la libreria para mostrar el progreso de la barra
+    comando = 'pip install tqdm'
+    os.system(comando)
+
 if __name__ == "__main__":
+    installTqdm()
     # formato: beneficio = [[valor, peso], ..., n]
     i=0
     while i<1:
