@@ -395,10 +395,10 @@ def runAlgo(files):
 # "se deben revisar los archivos en las carpetas "in" y "out" para comprobar
 # las pruebas"
 def run(files):
-    # se eliminan las carpetas con las puebas anteriores
+    # se eliminan las carpetas con las pruebas anteriores
     shutil.rmtree("in",ignore_errors=True)
     shutil.rmtree("out",ignore_errors=True)
-    # se recrean las carpetas con las puebas anteriores
+    # se recrean las carpetas para pruebas
     os.makedirs(os.getcwd()+"/in")
     os.makedirs(os.getcwd()+"/out")
     # se generan las pruebas
