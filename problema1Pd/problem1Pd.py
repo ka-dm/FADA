@@ -68,7 +68,7 @@ def leeArchivo(rutaArchivo):
         indice += 1
     archivoEntrada.close() 
 
-    #printMatriz(entrada)
+    printMatriz(entrada)
 
 def crearArchivoSalida(contenido):
     src = os.getcwd() #retorna la ruta actual de archivo .py
@@ -142,8 +142,11 @@ def valorPeso(a):
 
 if __name__ == "__main__":
     # formato: beneficio = [[valor, peso], ..., n]
-    src = input("Ingrese la ruta del archivo: ")
-    leeArchivo(src)
+    i=0
+    while i<1:
+        leeArchivo(src)
+        i+=1
+    
     matrizOrdenada = ordenarMatriz(entrada,2)
     beneficio = valorPeso(matrizOrdenada)
     W = 48

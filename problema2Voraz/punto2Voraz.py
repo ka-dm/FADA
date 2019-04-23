@@ -77,6 +77,9 @@ from random import randint
 # contienen los archivos de las pruebas
 import os
 import shutil
+# para hacer el calculo en el tiempo de ejecución
+import time
+
 
 #Inicia tomando un archivo y recuperando la informacion para ser procesado
 # --- [entras] ---
@@ -125,8 +128,8 @@ def algo(m,n,p,ideal):
     # j: indice para llevar conteo de escritores
     j=0
     # impresión para hacer verificaciones
-    print("m:"+str(m))
-    print("n:"+str(n))
+    #print("m:"+str(m))
+    #print("n:"+str(n))
     # max: variable que guarda el valor que se tardará en
     # transcribir la obra completa
     max=0
@@ -343,50 +346,43 @@ def writeFile(array,duration,path):
         i+=2
     out.close()
 
-# Generador de pruebas para el algortimo a partir de valores
-# aleatorios
-# --- [entras] ---
-# pagesLimit: el numero maximo de paginas para un libro
-# writersLimit: el numero maximo de escritores en cada problema
-# files: el numero de archivos aleatorios de pruebas para generar
-# booksLimit: el numero maximo de libros para asignar en cada problema
-# --- [salidas] ---
-# none
-def genProofs(pagesLimit,writersLimit,files,booksLimit):
-    i=1
-    while i<=files:
-        n = randint(1,writersLimit)
-        m = randint(writersLimit,booksLimit)
-        # se usa la carpeta "in" para depositar los problemas
-        file = open("in/in"+str(i),"w")
-        file.write(str(n)+" ")
-        file.write(str(m)+"\n")
-        j=1
-        while j<=m:
-            file.write("libro"+str(j)+" "+str(randint(1,pagesLimit))+"\n")
-            j+=1
-        i+=1
-    file.close()
-
 # Corre las pruebas que se encuentran en la carpeta "in" y 
-# escribe sus salidas en la carpeta "out"
+# escribe sus salidas en la carpeta "out" ademas escribe un arhivo
+# con los tiempos de ejecucion de las pruebas
 # --- [entras] ---
 # files: el numero de pruebas/archivos que se crearán/resolverán
 # --- [salidas] ---
 # none
 def runAlgo(files):
     i=1
+    timesFile = open("time","w")
     while i<=files:
         # se llama a begin() para capturar los datos del archivo
+        
+        startReadingTime = time.time()
         m,n,p,ideal = begin("in/in"+str(i))
+        endReadingTime = time.time()-startReadingTime
+        
         # se corre el algoritmo
+        startTime = time.time()
         out,duration = algo(m,n,p,ideal)
+        endTime=time.time()-startTime
+        
+        
         # cuestiones de verificación
-        print(p)
-        print(out)
-        # se escribe el archivo repuesta
+        #print(p)
+        #print(out)
+
+        # se escribe el archivo de repuesta
+        startWrittingTime = time.time()
         writeFile(prepare(m,n,out),duration,"out/out"+str(i))
+        endWrittingTime=time.time()-startWrittingTime
+
+        # se escribe el archivo de tiempos
+        timesFile.write(str(m)+":"+"{:1.5f}".format(endTime)+":"+"{:1.5f}".format(endReadingTime)+":"+"{:1.5f}".format(endWrittingTime)+"\n")
         i+=1
+    
+    timesFile.close()
 
 # Orquesta la generación de pruebas y la resolución de estas
 # --- [entras] ---
@@ -402,9 +398,40 @@ def run(files):
     os.makedirs(os.getcwd()+"/in")
     os.makedirs(os.getcwd()+"/out")
     # se generan las pruebas
-    genProofs(20,5,files,7)
+    genProofs(1000,10,files,7)
     # se generan las salidas
     runAlgo(files)     
 
+# Generador de pruebas para el algortimo a partir de valores
+# aleatorios
+# --- [entras] ---
+# pagesLimit: el numero maximo de paginas para un libro
+# writersLimit: el numero maximo de escritores en cada problema
+# files: el numero de archivos aleatorios de pruebas para generar
+# booksLimit: el numero maximo de libros para asignar en cada problema
+# --- [salidas] ---
+# none
+def genProofs(pagesLimit,writersLimit,files,booksLimit):
+    i=1
+    while i<=files:
+        #n = randint(1,writersLimit)
+        # ajuste manual de numero de escritores
+        n = 5
+        
+        #m = randint(writersLimit,booksLimit)
+        # ajuste progresivo del numero de libros
+        m = 10*i
+        # se usa la carpeta "in" para depositar los problemas
+        file = open("in/in"+str(i),"w")
+        file.write(str(n)+" ")
+        file.write(str(m)+"\n")
+        j=1
+        while j<=m:
+            file.write("libro"+str(j)+" "+str(randint(1,pagesLimit))+"\n")
+            j+=1
+        i+=1
+    file.close()
+
 ##########################################{ Ejecucion }##########################################
 run(1)
+
