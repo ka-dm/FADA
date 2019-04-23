@@ -146,6 +146,7 @@ def aux(carry,p,ideal):
         return True
     return False
 
+
 def prepare(m,n,out):
     i=0
     printable =[]
@@ -155,12 +156,16 @@ def prepare(m,n,out):
     else:
         while i<len(out):
             if i==0:
-                if==:
+                if len(out)==1:
+                    printable.append(1)
+                    printable.append(out[i])
+                    printable.append(out[i]+1)
+                    printable.append(m)
+                    i+=1
+                else:
                     printable.append(1)
                     printable.append(out[i])
                     i+=1
-                else:
-                    
             else:
                 if i==len(out)-1:
                     if out[i]==m:
