@@ -63,6 +63,19 @@ def leeArchivo(rutaArchivo):
 
     #printMatriz(entrada)
 
+def crearArchivoSalida(totalH,contenido):
+    src = os.getcwd() #retorna la ruta actual de archivo .py
+
+    archivoSalida = open(src + '\\punto1VorazSalida.txt', 'w')
+    archivoSalida.write(str(totalH) + '\n')
+    for i in range(len(contenido)):
+        archivoSalida.write(str(contenido[i]) + '\n')
+    archivoSalida.close()
+
+    print("#################################################")
+    print("# Se genero correctamente el archivo de salida. #")
+    print("#################################################")    
+
 def printMatriz(a):
     #imprime una matriz
     print()
@@ -116,10 +129,14 @@ if __name__ == "__main__":
     #"""
     b = beneficio(n,c,f) # beneficio
     solucion = slectorActividades(n,c,f)
+    totalH = toalHoras(b,solucion)
+    nombreSol = nombresSolucion(nombres,solucion)
 
-    print('Total horas = ', toalHoras(b,solucion))
+    crearArchivoSalida(totalH,nombreSol)
+
+    print('Total horas = ', totalH)
     print('Beneficio = ',b)
     print('Indices de las solucion = ',solucion)
-    print('Nombres de la solucion = ',nombresSolucion(nombres,solucion))
+    print('Nombres de la solucion = ',nombreSol)
     #"""
 #-----------------------------------------------------------------------------------------------------------------        
