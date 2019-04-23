@@ -1,11 +1,11 @@
 #####################{ Pruebas }#####################
 
-#Condiciones iniciales
+# Condiciones iniciales
 # Se cosidera para el desarrollo del algoritmo que el orden o secuencia que tienen
 # los libros no se puede alterar dado que en la salida lo unico que puede especificarse
 # son las distribuciones de libros a los n autores y el tiempo total de copiado
-# segun lo que dice el el siguiente fragmento "y cada una las n líneas siguientes 
-# represente la distribución de libros elegida, indicando para cada escritor desde y 
+# segun lo que dice el el siguiente fragmento "y cada una las n líneas siguientes
+# represente la distribución de libros elegida, indicando para cada escritor desde y
 # hasta qué libro va a copiar"
 # Se entiende por distribución a la asignación de libros a los escritores,
 # de modo que [1-1][2-3][4-6][7-7] podria ser una distribucion de siete(7) libros a
@@ -16,8 +16,8 @@
 # en ambas secuencias, el tercero libro ocupa la misma posición en ambas secuencias y así
 # sucesivamente
 
-##Pruebas de Escritorio
-##Prueba 1
+# Pruebas de Escritorio
+# Prueba 1
 # "Grupo ideal para un total de 360 paginas y 5 escritores"
 # [72,72,72,72,72,72,72,72,72,72], n=5
 
@@ -75,6 +75,7 @@ from random import randint
 import os
 import shutil
 
+
 def begin(path):
     archivo = open(path)
     nm = archivo.readline()
@@ -85,149 +86,151 @@ def begin(path):
     for linea in archivo.readlines():
         names.append(linea.split()[0])
         p.append(linea.split()[1])
-    p = list(map(int,p))
-    ideal = sum(p,0)/n
-    return m,n,p,ideal
+    p = list(map(int, p))
+    ideal = sum(p, 0)/n
+    return m, n, p, ideal
 
-def algo(m,n,p,ideal):
-    i=0
-    j=0
+
+def algo(m, n, p, ideal):
+    i = 0
+    j = 0
     print("m:"+str(m))
     print("n:"+str(n))
-    max=0
-    carry=0
+    max = 0
+    carry = 0
     out = []
-    if n==1:
-        max=sum(p)
-    if 1<n:
-        if m<=n:
-            while i<m:
-                if i==0:
-                    max=p[i]
-                if max<p[i]:
-                    max=p[i]
+    if n == 1:
+        max = sum(p)
+    if 1 < n:
+        if m <= n:
+            while i < m:
+                if i == 0:
+                    max = p[i]
+                if max < p[i]:
+                    max = p[i]
                 out.append(i)
-                i+=1
+                i += 1
         else:
-            while i<m:
-                if carry==0:
-                    carry+=p[i]
-                    if max<carry:
-                        max=carry
-                    i+=1
+            while i < m:
+                if carry == 0:
+                    carry += p[i]
+                    if max < carry:
+                        max = carry
+                    i += 1
                 else:
-                    if ideal<carry+p[i]:
-                        if aux(carry,p[i],ideal):
-                            if max<carry:
-                                max=carry
-                            carry=0
-                            j+=1
+                    if ideal < carry+p[i]:
+                        if aux(carry, p[i], ideal):
+                            if max < carry:
+                                max = carry
+                            carry = 0
+                            j += 1
                             out.append(i)
 
                         else:
                             carry += p[i]
-                            if max<carry:
-                                max=carry
-                            carry=0
-                            i+=1
-                            j+=1
+                            if max < carry:
+                                max = carry
+                            carry = 0
+                            i += 1
+                            j += 1
                             out.append(i)
                     else:
                         carry += p[i]
-                        if max<carry:
-                            max=carry
-                        i+=1
-    return out,max
+                        if max < carry:
+                            max = carry
+                        i += 1
+    return out, max
 
-def aux(carry,p,ideal):
+
+def aux(carry, p, ideal):
     before = ideal-carry
     after = (carry+p)-ideal
-    if(before<after):
+    if(before < after):
         return True
     return False
 
-def prepare(m,n,out):
-    i=0
-    printable =[]
-    if len(out)==0:
+
+def prepare(m, n, out):
+    i = 0
+    printable = []
+    if len(out) == 0:
         printable.append(1)
         printable.append(m)
     else:
-        
-        while i<len(out):
-            if i==0:
+
+        while i < len(out):
+            if i == 0:
                 printable.append(1)
                 printable.append(out[i])
-                i+=1
+                i += 1
             else:
-                if i==len(out)-1:
-                    if out[i]==m:
+                if i == len(out)-1:
+                    if out[i] == m:
                         printable.append(out[i-1]+1)
                         printable.append(out[i])
-                        i+=1
+                        i += 1
                     else:
                         printable.append(out[i-1]+1)
                         printable.append(out[i])
                         printable.append(out[i]+1)
                         printable.append(m)
-                        i+=1
+                        i += 1
                 else:
                     printable.append(out[i-1]+1)
                     printable.append(out[i])
-                    i+=1    
-    if m<=n:
+                    i += 1
+    if m <= n:
         return printable[2:]
     else:
         return printable
 
-def writeFile(array,duration,path):
-    out = open(path,"w")
-    m=len(array)
+
+def writeFile(array, duration, path):
+    out = open(path, "w")
+    m = len(array)
     out.write(str(duration)+"\n")
-    i=0
-    while i<m:
+    i = 0
+    while i < m:
         out.write("["+str(array[i])+"-"+str(array[i+1])+"]"+"\n")
-        i+=2
+        i += 2
     out.close()
 
-def genProofs(pagesLimit,writersLimit,filesLimit,booksLimit):
-    i=1
-    while i<=filesLimit:
-        n = randint(1,writersLimit)
-        m = randint(writersLimit,booksLimit)
-        file = open("in/in"+str(i),"w")
+
+def genProofs(pagesLimit, writersLimit, filesLimit, booksLimit):
+    i = 1
+    while i <= filesLimit:
+        n = randint(1, writersLimit)
+        m = randint(writersLimit, booksLimit)
+        file = open("in/in"+str(i), "w")
         file.write(str(n)+" ")
         file.write(str(m)+"\n")
-        j=1
-        while j<=m:
-            file.write("libro"+str(j)+" "+str(randint(1,pagesLimit))+"\n")
-            j+=1
-        i+=1
+        j = 1
+        while j <= m:
+            file.write("libro"+str(j)+" "+str(randint(1, pagesLimit))+"\n")
+            j += 1
+        i += 1
     file.close()
 
+
 def runAlgo(filesLimit):
-    i=1
-    while i<=filesLimit:
-        m,n,p,ideal = begin("in/in"+str(i))
-        out,duration = algo(m,n,p,ideal)
+    i = 1
+    while i <= filesLimit:
+        m, n, p, ideal = begin("in/in"+str(i))
+        out, duration = algo(m, n, p, ideal)
         print(p)
         print(out)
-        writeFile(prepare(m,n,out),duration,"out/out"+str(i))
-        i+=1
+        writeFile(prepare(m, n, out), duration, "out/out"+str(i))
+        i += 1
+
 
 def run(filesLimit):
-    shutil.rmtree("in",ignore_errors=True)
-    shutil.rmtree("out",ignore_errors=True)
+    shutil.rmtree("in", ignore_errors=True)
+    shutil.rmtree("out", ignore_errors=True)
     os.makedirs(os.getcwd()+"/in")
     os.makedirs(os.getcwd()+"/out")
-    genProofs(20,5,filesLimit,7)
-    runAlgo(filesLimit)     
+    genProofs(20, 5, filesLimit, 7)
+    runAlgo(filesLimit)
+
 
 #####################{ Ejecucion }#####################
 run(1)
-
-
-
-
-
-
