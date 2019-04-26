@@ -79,6 +79,8 @@ import os
 import shutil
 # para hacer el calculo en el tiempo de ejecución
 import time
+from tqdm import tqdm
+
 
 
 #Inicia tomando un archivo y recuperando la informacion para ser procesado
@@ -354,33 +356,27 @@ def writeFile(array,duration,path):
 # --- [salidas] ---
 # none
 def runAlgo(files):
-    i=1
+    print("--------------------[         Corriendo pruebas       ]--------------------")
     timesFile = open("time","w")
-    while i<=files:
+    for i in tqdm(range(files)):
         # se llama a begin() para capturar los datos del archivo
         
         startReadingTime = time.time()
-        m,n,p,ideal = begin("in/in"+str(i))
+        m,n,p,ideal = begin("in/in"+str(i+1))
         endReadingTime = time.time()-startReadingTime
         
         # se corre el algoritmo
         startTime = time.time()
         out,duration = algo(m,n,p,ideal)
         endTime=time.time()-startTime
-        
-        
-        # cuestiones de verificación
-        #print(p)
-        #print(out)
 
         # se escribe el archivo de repuesta
         startWrittingTime = time.time()
-        writeFile(prepare(m,n,out),duration,"out/out"+str(i))
+        writeFile(prepare(m,n,out),duration,"out/out"+str(i+1))
         endWrittingTime=time.time()-startWrittingTime
 
         # se escribe el archivo de tiempos
         timesFile.write(str(m)+":"+"{:1.5f}".format(endTime)+":"+"{:1.5f}".format(endReadingTime)+":"+"{:1.5f}".format(endWrittingTime)+"\n")
-        i+=1
     
     timesFile.close()
 
@@ -400,7 +396,8 @@ def run(files):
     # se generan las pruebas
     genProofs(1000,10,files,7)
     # se generan las salidas
-    runAlgo(files)     
+    runAlgo(files)   
+    print("--------------------[ Pruebas terminadas correctamente ]--------------------")  
 
 # Generador de pruebas para el algortimo a partir de valores
 # aleatorios
@@ -412,26 +409,25 @@ def run(files):
 # --- [salidas] ---
 # none
 def genProofs(pagesLimit,writersLimit,files,booksLimit):
-    i=1
-    while i<=files:
+    print("--------------------[          Generando pruebas       ]--------------------")
+    for i in tqdm(range(files)):
         #n = randint(1,writersLimit)
         # ajuste manual de numero de escritores
         n = 5
         
         #m = randint(writersLimit,booksLimit)
         # ajuste progresivo del numero de libros
-        m = 10*i
+        m = 20*(i+1)
         # se usa la carpeta "in" para depositar los problemas
-        file = open("in/in"+str(i),"w")
+        file = open("in/in"+str(i+1),"w")
         file.write(str(n)+" ")
         file.write(str(m)+"\n")
         j=1
         while j<=m:
             file.write("libro"+str(j)+" "+str(randint(1,pagesLimit))+"\n")
             j+=1
-        i+=1
     file.close()
 
 ##########################################{ Ejecucion }##########################################
-run(1)
+run(20)
 

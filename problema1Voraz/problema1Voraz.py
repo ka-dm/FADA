@@ -1,9 +1,11 @@
+##########################################{ Declaracion }##########################################
 from operator import itemgetter
 from random import randint
 import time
 import datetime
 import os
 import shutil
+from tqdm import tqdm
 
 def slectorActividades(n,c,f):
     
@@ -167,13 +169,12 @@ def writeFile(path,n, totalHoras, nombres):
 
 
 def runAlgo(files):
-    i=1
     timesFile = open("time","w")
 
-    while i<=files:
+    for i in tqdm(range(files)):
         # se leen los datos
         startReadingTime = time.time()
-        nombres, c,f,n = begin("in/in"+str(i))
+        nombres, c,f,n = begin("in/in"+str(i+1))
         endReadingTime = time.time()-startReadingTime
         
         # se corre el algoritmo
@@ -184,12 +185,11 @@ def runAlgo(files):
 
         # se escribe el archivo de repuesta
         startWrittingTime = time.time()
-        writeFile("out/out"+str(i),nProcedimientos, totalHoras, nombresSolucion)
+        writeFile("out/out"+str(i+1),nProcedimientos, totalHoras, nombresSolucion)
         endWrittingTime=time.time()-startWrittingTime
 
         # se escribe el archivo de tiempos
         timesFile.write(str(n)+":"+"{:1.5f}".format(endTime)+":"+"{:1.5f}".format(endReadingTime)+":"+"{:1.5f}".format(endWrittingTime)+"\n")
-        i+=1
     
     timesFile.close()
 
@@ -197,21 +197,23 @@ def run(files):
     # se eliminan las carpetas con las pruebas anteriores
     shutil.rmtree("in",ignore_errors=True)
     shutil.rmtree("out",ignore_errors=True)
-    # se recrean las carpetas para pruebas
+    # # se recrean las carpetas para pruebas
     os.makedirs(os.getcwd()+"/in")
     os.makedirs(os.getcwd()+"/out")
     # se generan las pruebas
     genProofs(files)
     # se generan las salidas
+    print("--------------------[         Corriendo pruebas       ]--------------------")
     runAlgo(files)     
+    print("--------------------[ Pruebas terminadas correctamente ]--------------------")
 
 def genProofs(files):
-    i=1
-    while i<=files:
+    print("--------------------[          Generando pruebas       ]--------------------")
+    for i in tqdm(range(files)):
         # el factor de i especifica el salto entre la cantidad de 
         # procedimientos de cada archivo
-        n = 10000*i
-        file = open("in/in"+str(i),"w")
+        n = 10000*(i+1)
+        file = open("in/in"+str(i+1),"w")
         file.write(str(n)+"\n")
         j=1
         while j<=n:
@@ -220,7 +222,8 @@ def genProofs(files):
             hString, h = randomTime(h)
             file.write(hString+"\n")
             j+=1
-        i+=1
     file.close()
 
-run(1)
+##########################################{ Ejecucion }##########################################
+os.system("pip install tqdm")
+run(10)
